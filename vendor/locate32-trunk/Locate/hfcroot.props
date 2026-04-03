@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_HfcRoot Condition="'$(HFCROOT)' != ''">$(HFCROOT)</_HfcRoot>
+    <_HfcRoot Condition="'$(HFCROOT)' == ''">C:\HFC</_HfcRoot>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(_HfcRoot)\include;$(_HfcRoot)\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(_HfcRoot)\include;$(_HfcRoot)\3rdparty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/FORCE:MULTIPLE %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories Condition="'$(Platform)'=='x64'">$(_HfcRoot)\lib64;$(_HfcRoot)\3rdparty\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Platform)'=='Win32'">$(_HfcRoot)\lib;$(_HfcRoot)\3rdparty\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories Condition="'$(Platform)'=='x64'">$(_HfcRoot)\lib64;$(_HfcRoot)\3rdparty\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Platform)'=='Win32'">$(_HfcRoot)\lib;$(_HfcRoot)\3rdparty\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+</Project>

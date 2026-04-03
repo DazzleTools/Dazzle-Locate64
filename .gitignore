@@ -148,8 +148,41 @@ docs/images/bak/
 *.exe
 *.obj
 
-# Project-specific runtime files
-# (add project-specific ignores here)
+# Locate32 build artifacts
+vendor/locate32-trunk/**/x64 - */
+vendor/locate32-trunk/**/Win32 - */
+vendor/locate32-trunk/**/*.user
+vendor/locate32-trunk/**/UpgradeLog.htm
+vendor/locate32-trunk/**/_UpgradeReport_Files/
+*.dbs
+*.pdb
+*.lib
+*.exp
+*.map
+*.dll
+*.ilk
+*.res
+*.idb
+*.pch
+*.recipe
+*.lastbuildstate
+*.tlog/
+*.FileListAbsolute.txt
+
+# Visual Studio
+.vs/
+**/.vs/
+**/Backup/
+
+# Source archive (large, re-downloadable; extract is also re-creatable)
+vendor/*.zip
+vendor/source-archive-*/
+
+# SVN metadata
+**/.svn/
+
+# Locate32 databases
+databases/
 
 # RepoKit Private Content Protection (DO NOT REMOVE)
 CLAUDE.md
