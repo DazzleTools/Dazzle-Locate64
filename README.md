@@ -1,11 +1,11 @@
-# Dazzle-Locate32
+# Dazzle-Locate64
 
 [![C++](https://img.shields.io/badge/C++-Win32-blue.svg)](https://en.cppreference.com/w/cpp)
 [![Visual Studio 2022](https://img.shields.io/badge/VS2022-v143-blue.svg)](https://visualstudio.microsoft.com/vs/)
 [![vcpkg](https://img.shields.io/badge/vcpkg-package%20manager-blue.svg)](https://vcpkg.io/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![GitHub release](https://img.shields.io/github/v/release/DazzleTools/Dazzle-Locate32?include_prereleases)](https://github.com/DazzleTools/Dazzle-Locate32/releases)
-[![GitHub Discussions](https://img.shields.io/github/discussions/DazzleTools/Dazzle-Locate32)](https://github.com/DazzleTools/Dazzle-Locate32/discussions)
+[![GitHub release](https://img.shields.io/github/v/release/DazzleTools/Dazzle-Locate64?include_prereleases)](https://github.com/DazzleTools/Dazzle-Locate64/releases)
+[![GitHub Discussions](https://img.shields.io/github/discussions/DazzleTools/Dazzle-Locate64)](https://github.com/DazzleTools/Dazzle-Locate64/discussions)
 
 [![Windows](https://img.shields.io/badge/Windows-10%2F11-brightgreen.svg)](docs/PLATFORMS.md)
 
@@ -21,7 +21,7 @@ The original Locate32 hasn't been updated since 2011. The last available binary 
 
 ## The Solution
 
-Dazzle-Locate32 modernizes the Locate32 codebase:
+Dazzle-Locate64 modernizes the Locate32 codebase:
 
 - **x64 native build** -- no more 32-bit address space crashes
 - **VS2022 toolchain** -- modern compiler with security mitigations (ASLR, CFG)
@@ -42,7 +42,7 @@ Dazzle-Locate32 modernizes the Locate32 codebase:
 
 ### Download Pre-built Binaries (Recommended)
 
-Download the latest release from the [Releases page](https://github.com/DazzleTools/Dazzle-Locate32/releases):
+Download the latest release from the [Releases page](https://github.com/DazzleTools/Dazzle-Locate64/releases):
 
 | Binary | Purpose |
 |--------|---------|
@@ -147,7 +147,7 @@ map <leader>op :call LOCATEIT('-d "C:\path\to\your\database.dbs"')<enter>
 ### Project Structure
 
 ```
-Dazzle-Locate32/
+Dazzle-Locate64/
 +-- vendor/
 |   +-- locate32-trunk/       # SVN r236 source (upstream)
 |   |   +-- HFCLib/           # Foundation C++ library
@@ -184,7 +184,7 @@ Like the project?
 
 ## License
 
-Dazzle-Locate32, Copyright (C) 2026 Dustin Darcy ([@djdarcy](https://github.com/djdarcy))
+Dazzle-Locate64, Copyright (C) 2026 Dustin Darcy ([@djdarcy](https://github.com/djdarcy))
 
 This project is licensed under the GNU General Public License v3.0 -- see the [LICENSE](LICENSE) file for details.
 

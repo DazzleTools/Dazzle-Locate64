@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help improve Dazzle-Locate32
+about: Create a report to help improve Dazzle-Locate64
 title: "[BUG] "
 labels: bug
 assignees: ''

@@ -1,6 +1,6 @@
 # Vendor Dependencies
 
-This directory contains upstream source code and third-party dependency archives for building Dazzle-Locate32.
+This directory contains upstream source code and third-party dependency archives for building Dazzle-Locate64.
 
 ## locate32-trunk/ (included in repo)
 

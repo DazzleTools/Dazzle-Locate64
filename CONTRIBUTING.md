@@ -1,6 +1,6 @@
-# Contributing to Dazzle-Locate32
+# Contributing to Dazzle-Locate64
 
-Thank you for considering contributing to Dazzle-Locate32!
+Thank you for considering contributing to Dazzle-Locate64!
 
 ## Development Setup
 
@@ -13,8 +13,8 @@ Thank you for considering contributing to Dazzle-Locate32!
 ### Clone and Build
 
 ```bash
-git clone https://github.com/DazzleTools/Dazzle-Locate32.git
-cd Dazzle-Locate32
+git clone https://github.com/DazzleTools/Dazzle-Locate64.git
+cd Dazzle-Locate64
 ```
 
 See [docs/BUILDING.md](docs/BUILDING.md) for the full build guide.
@@ -39,7 +39,7 @@ MSBuild vendor\locate32-trunk\Locate\locate.sln -p:Configuration=Release -p:Plat
 
 ```bash
 # Create a test database from a small directory
-Updtdb32.exe -d test.dbs -cU -L "C:\code\Dazzle-Locate32"
+Updtdb32.exe -d test.dbs -cU -L "C:\code\Dazzle-Locate64"
 
 # Verify search works
 locate.exe -d test.dbs "updatedb.cpp"

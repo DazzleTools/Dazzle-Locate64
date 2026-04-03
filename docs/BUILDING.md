@@ -1,4 +1,4 @@
-# Building Dazzle-Locate32
+# Building Dazzle-Locate64
 
 ## Prerequisites
 

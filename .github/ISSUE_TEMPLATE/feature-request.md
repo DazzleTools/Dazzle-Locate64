@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for Dazzle-Locate32
+about: Suggest an idea for Dazzle-Locate64
 title: "[FEATURE] "
 labels: enhancement
 assignees: ''

@@ -24,4 +24,4 @@ All notable changes will be documented here. Format based on [Keep a Changelog](
 
 Locate32 v3.1.11.7100 by Janne Huttunen -- last official release.
 
-[Unreleased]: https://github.com/DazzleTools/Dazzle-Locate32/commits/main
+[Unreleased]: https://github.com/DazzleTools/Dazzle-Locate64/commits/main

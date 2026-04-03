@@ -4,7 +4,7 @@
 
 ### Windows 10 / Windows 11 (Primary)
 
-Dazzle-Locate32 is built and tested on Windows 10 and Windows 11. This is the primary target platform.
+Dazzle-Locate64 is built and tested on Windows 10 and Windows 11. This is the primary target platform.
 
 - **Architecture**: x64 (64-bit) only
 - **Toolchain**: Visual Studio 2022 (v143 platform toolset)
