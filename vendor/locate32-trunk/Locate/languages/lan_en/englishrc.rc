@@ -27,8 +27,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,1,10,8220
- PRODUCTVERSION 3,1,10,8220
+ FILEVERSION 3,2,11,8221
+ PRODUCTVERSION 3,2,11,8221
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x3L
@@ -44,12 +44,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "English language file for Locate32"
-            VALUE "FileVersion", "3.1 RC3m build 10.8220"
+            VALUE "FileVersion", "3.2 RC4 build 11.8221"
             VALUE "InternalName", "lan_en"
             VALUE "LegalCopyright", "Copyright © 1997-2010 Janne Huttunen"
             VALUE "OriginalFilename", "lan_en.dll"
             VALUE "ProductName", "Locate32"
-            VALUE "ProductVersion", "3.1 RC3m build 10.8220"
+            VALUE "ProductVersion", "3.2 RC4 build 11.8221"
             VALUE "ProvidesLanguage", "English"
         END
     END
@@ -455,7 +455,7 @@ BEGIN
     CONTROL         "This program is freeware, [donations] are welcome though",IDC_YOURRIGHT,"Button",BS_OWNERDRAW | 
                     BS_RIGHT | BS_VCENTER | BS_FLAT | WS_TABSTOP,42,71,208,8
     LTEXT           "A\nB\nC\nD",IDC_SYSINFO,42,106,208,33
-    CONTROL         "New versions on [http://www.locate32.net]",IDC_GOTOHOMEPAGE,
+    CONTROL         "New versions on [github.com/DazzleTools/Dazzle-Locate64]",IDC_GOTOHOMEPAGE,
                     "Button",BS_OWNERDRAW | BS_LEFT | BS_VCENTER | BS_FLAT | 
                     WS_TABSTOP,42,90,191,8
     LTEXT           "",IDC_VERSION,42,44,191,10

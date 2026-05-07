@@ -1,7 +1,8 @@
 /* Copyright (c) 1997-2010 Janne Huttunen
    database locater v3.1.10.8220              */
+/* Dazzle-Locate64 modifications - Copyright (c) 2026 Dustin Darcy */
 
-const char* szVersionStr="locate 3.1 RC3m build 10.8220";
+const char* szVersionStr="locate 3.2 RC4 build 11.5091";
 
 #include <hfclib.h>
 #ifndef WIN32

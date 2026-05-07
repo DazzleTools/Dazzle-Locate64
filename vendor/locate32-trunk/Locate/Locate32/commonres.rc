@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,1,10,8220
- PRODUCTVERSION 3,1,10,8220
+ FILEVERSION 3,2,11,8221
+ PRODUCTVERSION 3,2,11,8221
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x3L
@@ -75,7 +75,7 @@ BEGIN
             VALUE "LegalCopyright", "Copyright © 1997-2010 Janne Huttunen"
             VALUE "OriginalFilename", "Locate32.exe"
             VALUE "ProductName", "Locate32"
-            VALUE "ProductVersion", "3.1 RC3m build 10.8220a"
+            VALUE "ProductVersion", "3.2 RC4 build 11.8221"
         END
     END
     BLOCK "VarFileInfo"

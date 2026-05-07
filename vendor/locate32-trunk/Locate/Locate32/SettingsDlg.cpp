@@ -3104,7 +3104,7 @@ void CSettingsProperties::CDatabasesSettingsPage::OnImport()
 		return;
 
 	// First, check whether file is database and read information
-	CDatabase* pDatabase;
+	CDatabase* pDatabase=NULL;
 	CStringW Path;
 	fd.GetFilePath(Path);
 	CDatabaseInfo* pDatabaseInfo=CDatabaseInfo::GetFromFile(Path);
@@ -3125,6 +3125,31 @@ void CSettingsProperties::CDatabasesSettingsPage::OnImport()
 		{
 			pDatabase->SetArchiveType(CDatabase::archiveFile);
 			pDatabase->SetArchiveName(Path);
+		}
+		else
+		{
+			// Dazzle-Locate64 fix (issue #7): valid database file but no
+			// embedded settings (typical for CLI-built databases). Offer
+			// to register it as a new search database using the root
+			// paths recorded in the database header.
+			CStringW msg;
+			msg.Format(L"This database file:\n\n    %s\n\nhas no embedded settings (typical for databases built via the CLI Updtdb32.exe).\n\nRegister it as a new search database using its recorded root paths?\n\nYou can review and adjust the configuration in the next dialog.",
+				(LPCWSTR)Path);
+			if (MessageBox(msg,ID2W(IDS_IMPORTDATABASESETTINGS),
+				MB_ICONQUESTION|MB_YESNO)==IDYES)
+			{
+				pDatabase=CDatabase::FromFile(Path,(int)Path.GetLength());
+				if (pDatabase!=NULL)
+				{
+					// Populate roots from the database header
+					for (int i=0;i<pDatabaseInfo->aRootFolders.GetSize();i++)
+					{
+						CDatabaseInfo::CRoot* pRoot=pDatabaseInfo->aRootFolders[i];
+						if (pRoot!=NULL && !pRoot->sPath.IsEmpty())
+							pDatabase->AddRoot(pRoot->sPath);
+					}
+				}
+			}
 		}
 
 		delete pDatabaseInfo;

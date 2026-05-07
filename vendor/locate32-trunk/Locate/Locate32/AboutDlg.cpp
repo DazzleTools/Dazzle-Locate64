@@ -1,9 +1,23 @@
 /* Locate32 - Copyright (c) 1997-2010 Janne Huttunen */
+/* Dazzle-Locate64 modifications - Copyright (c) 2026 Dustin Darcy */
 
 #include <HFCLib.h>
 #include "Locate32.h"
 
 #include <Winternl.h>
+
+// RtlGetVersion returns the true OS version (GetVersionEx lies after Win8.1)
+typedef NTSTATUS (WINAPI *RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+
+static BOOL GetTrueWindowsVersion(RTL_OSVERSIONINFOW* osvi)
+{
+	HMODULE hNtdll = GetModuleHandleW(L"ntdll.dll");
+	if (hNtdll == NULL) return FALSE;
+	RtlGetVersionPtr pRtlGetVersion = (RtlGetVersionPtr)GetProcAddress(hNtdll, "RtlGetVersion");
+	if (pRtlGetVersion == NULL) return FALSE;
+	osvi->dwOSVersionInfoSize = sizeof(RTL_OSVERSIONINFOW);
+	return pRtlGetVersion(osvi) == 0; // STATUS_SUCCESS
+}
 
 BOOL CAboutDlg::OnCommand(WORD wID, WORD wNotifyCode, HWND hControl)
 {
@@ -17,21 +31,38 @@ BOOL CAboutDlg::OnCommand(WORD wID, WORD wNotifyCode, HWND hControl)
 		}
 	case IDC_MAILME:
 		{
+			// Original locate32.net contact page is dead; redirect to the
+			// Dazzle-Locate64 GitHub Issues page for bug reports / feedback.
 			CWaitCursor wait;
-			ShellFunctions::ShellExecute(*this,NULL,"http://locate32.net/content/view/51/43/",
+			ShellFunctions::ShellExecute(*this,NULL,"https://github.com/DazzleTools/Dazzle-Locate64/issues",
 				NULL,NULL,0);
 			break;
 		}
 	case IDC_GOTOHOMEPAGE:
 		{
+			// Original locate32.net is dead; point the homepage button at
+			// the Dazzle-Locate64 repository.
 			CWaitCursor wait;
-			ShellFunctions::ShellExecute(*this,NULL,"http://www.locate32.net", //http://locate32.webhop.or",
+			ShellFunctions::ShellExecute(*this,NULL,"https://github.com/DazzleTools/Dazzle-Locate64",
 				NULL,NULL,0);
 			break;
 		}
 	case IDC_YOURRIGHT:
+		{
+			// Dazzle-Locate64: the "[donations]" link in the freeware text
+			// now points at the Dazzle-Locate64 maintainer's tip jar.
+			// (The PayPal donate-button graphic below still goes to the
+			// original locate32.net author's PayPal as a tribute.)
+			CWaitCursor wait;
+			ShellFunctions::ShellExecute(*this,NULL,
+				"https://buymeacoffee.com/djdarcy",
+				NULL,NULL,0);
+			break;
+		}
 	case IDC_DONATE:
 		{
+			// Original PayPal donate link kept as a tribute to the
+			// upstream Locate32 author (Janne Huttunen).
 			CWaitCursor wait;
 			ShellFunctions::ShellExecute(*this,NULL,
 				"https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=Janne%2eHuttunen%40locate32%2enet&lc=FI&item_name=Locate32&no_shipping=1&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted",
@@ -53,8 +84,7 @@ BOOL CAboutDlg::OnInitDialog(HWND hwndFocus)
 {
 	CDialog::OnInitDialog(hwndFocus);
 	CWaitCursor wait;
-	OSVERSIONINFO ver;
-	MEMORYSTATUS mem;
+	OSVERSIONINFO ver; // Used in fallback path
 	CStringW text,text2;
 
 	// Setting banner and donate button
@@ -67,10 +97,10 @@ BOOL CAboutDlg::OnInitDialog(HWND hwndFocus)
 	{
 		CStringW str;
 #ifdef _DEBUG
-		str.Format(L"%s © 1997-2010 Janne Huttunen\nTHIS IS DEBUG VERSION, %s %s",
+		str.Format(L"%s (c) 1997-2010 Janne Huttunen\nDazzle-Locate64 (c) 2026 Dustin Darcy\nTHIS IS DEBUG VERSION, %s %s",
 			(LPCWSTR)ID2W(IDS_COPYRIGHT),(LPCWSTR)A2W(__DATE__),(LPCWSTR)A2W(__TIME__));
 #else
-		str.Format(L"%s © 1997-2010 Janne Huttunen",(LPCWSTR)ID2W(IDS_COPYRIGHT));
+		str.Format(L"%s (c) 1997-2010 Janne Huttunen\nDazzle-Locate64 (c) 2026 Dustin Darcy",(LPCWSTR)ID2W(IDS_COPYRIGHT));
 #endif
 		SetDlgItemText(IDC_COPYRIGHT,str);
 
@@ -113,83 +143,53 @@ BOOL CAboutDlg::OnInitDialog(HWND hwndFocus)
 
 	}
 	
-	ver.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
-	if(GetVersionEx(&ver))
+	// Use RtlGetVersion for true OS version (GetVersionEx lies after Win8.1)
+	RTL_OSVERSIONINFOW rtlver;
+	if (GetTrueWindowsVersion(&rtlver))
 	{
-		switch(ver.dwPlatformId)
-		{
-		case VER_PLATFORM_WIN32s:
-			text2.LoadString(IDS_SYSWIN32S);
-			break;
-		case VER_PLATFORM_WIN32_WINDOWS:
-			{
-				if (ver.dwMajorVersion>=4 && ver.dwMinorVersion>=90)
-					text.FormatEx(IDS_SYSWINME,ver.dwMajorVersion,ver.dwMinorVersion,(WORD)ver.dwBuildNumber);
-				else if (ver.dwMajorVersion==4 && ver.dwMinorVersion>=10)
-					text.FormatEx(IDS_SYSWIN98,ver.dwMajorVersion,ver.dwMinorVersion,(WORD)ver.dwBuildNumber);
-				else
-					text.FormatEx(IDS_SYSWIN95,ver.dwMajorVersion,ver.dwMinorVersion,(WORD)ver.dwBuildNumber);
-				text << ver.szCSDVersion;
-				break;
-			}
-		case VER_PLATFORM_WIN32_NT:
-			{
-				if (ver.dwMajorVersion==6)
-				{
-					// Windows Vista products
-					OSVERSIONINFOEX osx;
-					osx.dwOSVersionInfoSize=sizeof(OSVERSIONINFOEX);
-					GetVersionEx((OSVERSIONINFO*)&osx);
-					if (osx.wProductType==VER_NT_SERVER)
-						text.FormatEx(IDS_SYSWINSERVERLONGHORN,osx.dwMajorVersion,osx.dwMinorVersion,osx.dwBuildNumber);
-					else if (ver.dwMinorVersion>=1)
-						text.FormatEx(IDS_SYSWIN7,osx.dwMajorVersion,osx.dwMinorVersion,osx.dwBuildNumber);
-					else 
-						text.FormatEx(IDS_SYSWINVISTA,osx.dwMajorVersion,osx.dwMinorVersion,osx.dwBuildNumber);
-					text << ' ' << osx.szCSDVersion;
-				}
-				else if (ver.dwMajorVersion==5 && ver.dwMinorVersion>=1)
-				{
-					// Windows XP products
-					OSVERSIONINFOEX osx;
-					osx.dwOSVersionInfoSize=sizeof(OSVERSIONINFOEX);
-					GetVersionEx((OSVERSIONINFO*)&osx);
-					if (osx.wProductType==VER_NT_SERVER)
-						text.FormatEx(IDS_SYSWIN2003SERVER,osx.dwMajorVersion,osx.dwMinorVersion,osx.dwBuildNumber);
-					else
-						text.FormatEx(IDS_SYSWINXP,osx.dwMajorVersion,osx.dwMinorVersion,osx.dwBuildNumber);
-					text << ' ' << osx.szCSDVersion;
-				}
-				else if (ver.dwMajorVersion==5)
-				{
-					// Windows 2000 products
-					OSVERSIONINFOEX osx;
-					osx.dwOSVersionInfoSize=sizeof(OSVERSIONINFOEX);
-					GetVersionEx((OSVERSIONINFO*)&osx);
-
-					if (osx.wProductType==VER_NT_SERVER && osx.wSuiteMask&VER_SUITE_ENTERPRISE)
-						text.FormatEx(IDS_SYSWIN2000ENTEPRISE,osx.dwMajorVersion,osx.dwMinorVersion,osx.dwBuildNumber);
-					else if (osx.wProductType==VER_NT_SERVER)
-						text.FormatEx(IDS_SYSWIN2000SERVER,osx.dwMajorVersion,osx.dwMinorVersion,osx.dwBuildNumber);
-					else
-						text.FormatEx(IDS_SYSWIN2000WORKSTATION,osx.dwMajorVersion,osx.dwMinorVersion,osx.dwBuildNumber);
-					text << ' ' << osx.szCSDVersion;
-				}
-				else
-				{
-					text.FormatEx(IDS_SYSWINNT,ver.dwMajorVersion,ver.dwMinorVersion,ver.dwBuildNumber);
-					text << ver.szCSDVersion;
-				}
-				break;
-			}
-		}
+		if (rtlver.dwMajorVersion >= 10 && rtlver.dwBuildNumber >= 22000)
+			text.Format(L"Windows 11 (Version %d.%d Build %d)",
+				rtlver.dwMajorVersion, rtlver.dwMinorVersion, rtlver.dwBuildNumber);
+		else if (rtlver.dwMajorVersion >= 10)
+			text.Format(L"Windows 10 (Version %d.%d Build %d)",
+				rtlver.dwMajorVersion, rtlver.dwMinorVersion, rtlver.dwBuildNumber);
+		else if (rtlver.dwMajorVersion == 6 && rtlver.dwMinorVersion == 3)
+			text.Format(L"Windows 8.1 (Version %d.%d Build %d)",
+				rtlver.dwMajorVersion, rtlver.dwMinorVersion, rtlver.dwBuildNumber);
+		else if (rtlver.dwMajorVersion == 6 && rtlver.dwMinorVersion == 2)
+			text.Format(L"Windows 8 (Version %d.%d Build %d)",
+				rtlver.dwMajorVersion, rtlver.dwMinorVersion, rtlver.dwBuildNumber);
+		else if (rtlver.dwMajorVersion == 6 && rtlver.dwMinorVersion >= 1)
+			text.Format(L"Windows 7 (Version %d.%d Build %d)",
+				rtlver.dwMajorVersion, rtlver.dwMinorVersion, rtlver.dwBuildNumber);
+		else if (rtlver.dwMajorVersion == 6)
+			text.Format(L"Windows Vista (Version %d.%d Build %d)",
+				rtlver.dwMajorVersion, rtlver.dwMinorVersion, rtlver.dwBuildNumber);
+		else
+			text.Format(L"Windows NT %d.%d (Build %d)",
+				rtlver.dwMajorVersion, rtlver.dwMinorVersion, rtlver.dwBuildNumber);
 	}
-	mem.dwLength=sizeof(MEMORYSTATUS);
-	GlobalMemoryStatus(&mem);
-	text2.FormatEx(IDS_SYSPHYSMEM,mem.dwTotalPhys>>10,mem.dwAvailPhys>>10);
-	text<<text2;
-	text2.FormatEx(IDS_SYSPAGEDMEM,mem.dwTotalPageFile>>10,mem.dwAvailPageFile>>10);
-	text<<text2;
+	else
+	{
+		// Fallback to GetVersionEx if RtlGetVersion unavailable
+		ver.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
+		if(GetVersionEx(&ver))
+			text.Format(L"Windows (Version %d.%d Build %d)",
+				ver.dwMajorVersion, ver.dwMinorVersion, ver.dwBuildNumber);
+	}
+
+	// Use GlobalMemoryStatusEx for accurate reporting (>4 GB)
+	MEMORYSTATUSEX memex;
+	memex.dwLength = sizeof(MEMORYSTATUSEX);
+	if (GlobalMemoryStatusEx(&memex))
+	{
+		text2.Format(L"\nPhysical memory: %llu MB total, %llu MB available",
+			memex.ullTotalPhys >> 20, memex.ullAvailPhys >> 20);
+		text << text2;
+		text2.Format(L"\nPage file: %llu MB total, %llu MB available",
+			memex.ullTotalPageFile >> 20, memex.ullAvailPageFile >> 20);
+		text << text2;
+	}
 	SetDlgItemText(IDC_SYSINFO,text);
 	SetIcon(NULL,TRUE);
 	SetIcon(NULL,FALSE);

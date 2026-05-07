@@ -8,7 +8,7 @@
 #include "../common/win95crtfixes.h"
 #include <locale.h>
 
-LPCSTR szVersionStr="updtdb32 3.1 RC3m build 10.8220";
+LPCSTR szVersionStr="updtdb32 3.2 RC4 build 11.8221";
 
 
 

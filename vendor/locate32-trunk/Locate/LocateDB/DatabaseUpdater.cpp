@@ -1325,21 +1325,38 @@ UpdateError CDatabaseUpdater::CRootDirectory::Write(CFile* dbFile)
 			nType=0xF0;
 		// resolving label,fs and serial
 #ifdef WIN32
+// Dazzle-Locate64 fix (issue #6): mirror of WriteW change. Skip
+// GetVolumeInformation for DRIVE_REMOTE / DRIVE_NO_ROOT_DIR / DRIVE_UNKNOWN to
+// avoid hang on substituted/network paths.
 		// Resolving information
 		DWORD dwTemp;
 		UINT nOldMode=SetErrorMode(SEM_FAILCRITICALERRORS);
-		BOOL nRet;
+		BOOL nRet=FALSE;
+		UINT uDriveType=DRIVE_UNKNOWN;
 		if (m_Path[0]!=L'\\')
+		{
+			char szDrive[4]="X:\\";
+			szDrive[0]=W2Ac(m_Path[0]);
+			uDriveType=GetDriveTypeA(szDrive);
+		}
+		else
+		{
+			uDriveType=DRIVE_REMOTE;
+		}
+
+		if (uDriveType==DRIVE_REMOTE || uDriveType==DRIVE_NO_ROOT_DIR ||
+			uDriveType==DRIVE_UNKNOWN)
+		{
+			nRet=FALSE;
+		}
+		else if (m_Path[0]!=L'\\')
 		{
 			char szDrive[4]="X:\\";
 			szDrive[0]=W2Ac(m_Path[0]);
 			nRet=GetVolumeInformation(szDrive,sVolumeName.GetBuffer(50),50,&dwSerial,
 				&dwTemp,&dwTemp,sFSName.GetBuffer(50),50);
 		}
-		else // network, UNC path
-			nRet=GetVolumeInformation(W2A(m_Path),sVolumeName.GetBuffer(50),50,&dwSerial,
-				&dwTemp,&dwTemp,sFSName.GetBuffer(50),50);
-		
+
 		if (nRet)
 		{
 			sVolumeName.FreeExtra();
@@ -1438,22 +1455,45 @@ UpdateError CDatabaseUpdater::CRootDirectory::WriteW(CFile* dbFile)
 		else
 			nType=0xF0;
 
+// Dazzle-Locate64 fix (issue #6): GetVolumeInformationW can block indefinitely
+// on substituted UNC drives and unresponsive network shares. Skip the volume
+// query for DRIVE_REMOTE / DRIVE_NO_ROOT_DIR and fall through to empty metadata
+// (which is already the existing failure-path behavior). Local drives are
+// unaffected.
 		// resolving label,fs and serial
 		// Resolving information
 		DWORD dwTemp;
 		UINT nOldMode=SetErrorMode(SEM_FAILCRITICALERRORS);
-		BOOL nRet;
+		BOOL nRet=FALSE;
+		UINT uDriveType=DRIVE_UNKNOWN;
 		if (m_Path[0]!=L'\\')
+		{
+			WCHAR szDrive[4]=L"X:\\";
+			szDrive[0]=m_Path[0];
+			uDriveType=GetDriveTypeW(szDrive);
+		}
+		else
+		{
+			// UNC path
+			uDriveType=DRIVE_REMOTE;
+		}
+
+		if (uDriveType==DRIVE_REMOTE || uDriveType==DRIVE_NO_ROOT_DIR ||
+			uDriveType==DRIVE_UNKNOWN)
+		{
+			// Skip volume info query for network/substituted/unknown drives
+			// to avoid potential indefinite hang on unresponsive SMB servers.
+			// Same metadata as the existing failure fallback below.
+			nRet=FALSE;
+		}
+		else if (m_Path[0]!=L'\\')
 		{
 			WCHAR szDrive[4]=L"X:\\";
 			szDrive[0]=m_Path[0];
 			nRet=GetVolumeInformationW(szDrive,sVolumeName.GetBuffer(50),50,&dwSerial,
 				&dwTemp,&dwTemp,sFSName.GetBuffer(50),50);
 		}
-		else // network, UNC path
-			nRet=GetVolumeInformationW(m_Path,sVolumeName.GetBuffer(50),50,&dwSerial,
-				&dwTemp,&dwTemp,sFSName.GetBuffer(50),50);
-		
+
 		if (nRet)
 		{
 			sVolumeName.FreeExtra();

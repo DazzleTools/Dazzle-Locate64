@@ -174,8 +174,12 @@ BOOL CDatabaseInfo::GetInfo(CDatabase::ArchiveType nArchiveType,LPCWSTR szArchiv
 
 				aRootFolders.Add(pRoot);
 
-				
-				m_pFile->Seek(dwSeekLength,CFile::current);
+
+				// Seek with explicit zero high-DWORD so SetFilePointer treats
+				// dwSeekLength as a 64-bit unsigned offset; without this, values
+				// >LONG_MAX wrap to negative and the seek fails on databases >2 GB.
+				LONG lSeekHigh=0;
+				m_pFile->Seek((LONG)dwSeekLength,CFile::current,&lSeekHigh);
 				m_pFile->Read(dwBlockSize);
 			}
 
@@ -359,9 +363,13 @@ BOOL CDatabaseInfo::GetRootsFromDatabase(CArray<LPWSTR>& aRoots,const CDatabase*
 				else
 					aRoots.Add(alloccopy(Path,Path.GetLength()));
 							
-				dbFile->Seek(dwBlockSize-1-DWORD((Path.GetLength()+1)*2),
-					CFile::current);
-				
+				// 64-bit-safe seek (see comment in GetInfo above).
+				{
+					LONG lSeekHigh=0;
+					DWORD dwSkip=dwBlockSize-1-DWORD((Path.GetLength()+1)*2);
+					dbFile->Seek((LONG)dwSkip,CFile::current,&lSeekHigh);
+				}
+
 				dbFile->Read(dwBlockSize);
 			}
 		}
@@ -392,9 +400,13 @@ BOOL CDatabaseInfo::GetRootsFromDatabase(CArray<LPWSTR>& aRoots,const CDatabase*
 					aRoots.Add(alloccopyAtoW(Path,Path.GetLength()));
 				
 							
-				dbFile->Seek(dwBlockSize-1-DWORD((Path.GetLength()+1)),
-					CFile::current);
-				
+				// 64-bit-safe seek (see comment in GetInfo above).
+				{
+					LONG lSeekHigh=0;
+					DWORD dwSkip=dwBlockSize-1-DWORD((Path.GetLength()+1));
+					dbFile->Seek((LONG)dwSkip,CFile::current,&lSeekHigh);
+				}
+
 				dbFile->Read(dwBlockSize);
 			}
 		}
