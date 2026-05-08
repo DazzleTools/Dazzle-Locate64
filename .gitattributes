@@ -1,0 +1,38 @@
+# GitHub Linguist overrides
+# Docs: https://github.com/github-linguist/linguist/blob/main/docs/overrides.md
+#
+# Linguist defaults treat any path starting with `vendor/` as vendored
+# third-party code and excludes it from the repository's language stats.
+# That's the wrong behavior for this project because the ENTIRE C/C++
+# source tree lives under `vendor/locate32-trunk/`. The directory name is
+# historical: the code was imported from upstream Locate32's SVN snapshot
+# (r236, 2011) into a `vendor/` prefix to keep the original layout intact,
+# but we maintain and modify it in-tree -- it IS the project.
+#
+# Without these overrides, GitHub reports the project as 100% Python /
+# Shell / PowerShell because the only "non-vendored" files left are the
+# `scripts/` subtree (Python tooling from git-repokit-common) and a handful
+# of helper scripts.
+
+# --- Primary project source code: opt back IN to language stats ----------
+vendor/locate32-trunk/**            linguist-vendored=false
+vendor/locate32-trunk/**            linguist-generated=false
+
+# --- Truly-vendored content under that tree: keep excluded ---------------
+# Subversion metadata (the upstream SVN checkout's bookkeeping) is not our work.
+vendor/locate32-trunk/**/.svn/**    linguist-vendored=true
+
+# --- scripts/ is a git subtree of DazzleTools/git-repokit-common ---------
+# This is shared tooling we pull in via subtree -- not our primary source.
+# Marking vendored so the Python scripts don't dominate language stats.
+scripts/**                          linguist-vendored=false
+
+# --- tests/one-offs/ are diagnostic scripts, not main project source -----
+tests/one-offs/**                   linguist-vendored=false
+
+# --- Build / project files that aren't really "code" --------------------
+# IDE-managed XML; would otherwise show up as XML in language stats.
+*.vcxproj                           linguist-generated=false
+*.vcxproj.filters                   linguist-generated=true
+*.vcproj                            linguist-generated=false
+*.sln                               linguist-generated=false
